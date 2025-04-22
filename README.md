@@ -202,5 +202,4 @@ For any questions or feedback, please contact:
 - GitHub: [@arju10](https://github.com/arju10)
 - LinkedIn: [@arju10](https://www.linkedin.com/in/arju10/)
 - Facebook: [@arju10.arju](https://www.facebook.com/arju10.arju)
----
-# Bangla-Agricultural-Advisor-Chatbot-using-django
+
