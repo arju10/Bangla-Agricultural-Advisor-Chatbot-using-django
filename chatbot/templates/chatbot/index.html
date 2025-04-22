@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <title>বাংলা কৃষি পরামর্শ চ্যাটবট</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* General Styles */
+    body {
+      font-family: 'Noto Sans Bengali', sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 20px;
+      color: #2c3e50;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #27ae60;
+      margin-bottom: 30px;
+      font-size: 2rem;
+    }
+
+    h2 {
+      color: #2980b9;
+      margin-top: 30px;
+      font-size: 1.5rem;
+    }
+
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    input[type="text"],
+    input[type="file"] {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+      font-size: 1rem;
+    }
+
+    button {
+      background-color: #27ae60;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease;
+      display: inline-block;
+    }
+
+    button:hover {
+      background-color: #219150;
+      transform: scale(1.05);
+    }
+
+    .response-section {
+      margin-top: 20px;
+      padding: 15px;
+      background: #ecf0f1;
+      border-left: 4px solid #27ae60;
+      border-radius: 6px;
+    }
+
+    img {
+      max-width: 100%;
+      margin-top: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      transition: transform 0.3s ease;
+    }
+
+    img:hover {
+      transform: scale(1.05);
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 1.75rem;
+      }
+
+      h2 {
+        font-size: 1.25rem;
+      }
+    }
+  </style>
+
+  <script>
+    function startVoiceQuery() {
+      fetch('', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: 'voice_query=true'
+      })
+      .then(response => response.text())
+      .then(data => {
+        document.open();
+        document.write(data);
+        document.close();
+      });
+    }
+
+       // Handle Image Upload
+    // Handle Image Upload
+    function handleImageUpload(event) {
+        event.preventDefault();
+        const formData = new FormData();
+        const imageFile = document.getElementById('image_upload').files[0];
+        if (!imageFile) {
+          alert("ফসলের ছবি আপলোড করুন।");
+          return;
+        }
+        formData.append('image_upload', imageFile);
+  
+        fetch('', {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+          },
+          body: formData
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Response Data:', data); // Debugging statement
+  
+          // Display the uploaded image
+          const imageElement = document.getElementById('uploaded_image');
+          imageElement.src = data.image_url;
+          imageElement.style.display = 'block';
+          imageElement.alt = 'Uploaded crop image';
+  
+          // Show the disease detection result section
+          const diseaseResultSection = document.getElementById('disease_result_section');
+          diseaseResultSection.classList.remove('hidden');
+  
+          // Display the disease detection result
+          const diseaseResultElement = document.getElementById('disease_result');
+          diseaseResultElement.innerText = data.disease_result;
+  
+          // Display the suggestion in the advice section
+          const adviceElement = document.getElementById('advice');
+          adviceElement.innerText = data.disease_result.split('সাজেশন:')[1] || 'কোন সাজেশন পাওয়া যায়নি।';
+        })
+        .catch(error => {
+          console.error('There was a problem with the fetch operation:', error); // Debugging statement
+          alert('ছবি আপলোড বা রোগ নির্ণয়ে সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।');
+        });
+      }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>🌾 বাংলা কৃষি পরামর্শ চ্যাটবট</h1>
+
+    <!-- Text Query Form -->
+    <form method="post">
+      {% csrf_token %}
+      <label for="user_query">আপনার প্রশ্ন লিখুন (বাংলায়):</label>
+      <input type="text" id="user_query" name="user_query" required />
+      <button type="submit">পরামর্শ নিন</button>
+    </form>
+
+    <!-- Voice Query Button -->
+    <div class="center">
+      <button onclick="startVoiceQuery()">🎤 কথা বলুন</button>
+    </div>
+
+    {% if query %}
+    <div class="response-section">
+      <h2>📢 আপনি বলেছেন:</h2>
+      <p>{{ query }}</p>
+    </div>
+    {% else %}
+    <p class="center">❗ No query received.</p>
+    {% endif %}
+
+
+        <!-- Image Upload Form -->
+        
+    <!-- Image Upload Form -->
+    <form method="post" enctype="multipart/form-data" onsubmit="handleImageUpload(event)">
+        {% csrf_token %}
+        <label for="image_upload">ফসলের ছবি আপলোড করুন:</label>
+        <input type="file" id="image_upload" name="image_upload" accept="image/*" required />
+        <button type="submit">রোগ নির্ণয় করুন</button>
+      </form>
+  
+      <!-- Display Uploaded Image -->
+      <img id="uploaded_image" style="display:none;" alt="Uploaded crop image" />
+  
+      <!-- Disease Detection Result Section (Initially Hidden) -->
+      <div id="disease_result_section" class="response-section hidden">
+        <h2>📢 রোগ নির্ণয়:</h2>
+        <p id="disease_result">ফসলের ছবি আপলোড করুন।</p>
+      </div>
+
+      {% if disease_result %}
+    <div class="response-section">
+      <h2>📢 রোগ নির্ণয়:</h2>
+      <p>{{ disease_result }}</p>
+    </div>
+    {% endif %} 
+
+
+          <!-- Advice Section -->
+    <div class="response-section">
+        <h2>📢 পরামর্শ:</h2>
+        <p id="advice">{{ answer }}  {{ disease_result }}</p>
+      </div>
+  </div>
+</body>
+</html>
+
+
+
+
+

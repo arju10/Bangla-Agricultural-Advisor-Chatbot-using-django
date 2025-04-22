@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>বাংলা কৃষি পরামর্শ চ্যাটবট</title>
+    <script>
+        function startVoiceQuery() {
+            // Send a POST request to indicate a voice query
+            fetch('', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: 'voice_query=true'
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.open();
+                document.write(data);
+                document.close();
+            });
+        }
+
+
+
+        {% comment %} Handle Image Upload {% endcomment %}
+        function handleImageUpload(event) {
+            event.preventDefault();
+
+            const formData = new FormData();
+            const imageFile = document.getElementById('image_upload').files[0];
+            formData.append('image_upload', imageFile);
+
+            fetch('', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display the uploaded image
+                document.getElementById('uploaded_image').src = data.image_url;
+                document.getElementById('uploaded_image').style.display = 'block';
+
+                // Display the disease detection result
+                document.getElementById('disease_result').innerText = data.disease_result;
+            });
+        }
+    </script>
+</head>
+<style>
+
+    h2 {
+        color: #2c3e50;
+    }
+    p {
+        font-size: 18px;
+        color: #34495e;
+    }
+    input, button {
+        margin: 10px 0;
+        padding: 10px;
+        font-size: 16px;
+    }
+    img {
+        max-width: 300px;
+        margin-top: 10px;
+    }
+</style>
+<body>
+    <h1>🌾 বাংলা কৃষি পরামর্শ চ্যাটবট</h1>
+
+
+    <!-- Text Query Form -->
+    <form method="post">
+        {% csrf_token %}
+        <label for="user_query">আপনার প্রশ্ন লিখুন (বাংলায়):</label><br>
+        <input type="text" id="user_query" name="user_query" required><br><br>
+        <button type="submit">পরামর্শ নিন</button>
+    </form>
+
+    <!-- Voice Query Button -->
+    <button onclick="startVoiceQuery()">কথা বলুন</button>
+    <!-- Display Transcribed Text -->
+    {% if query %}
+    <h2>📢 আপনি বলেছেন:</h2>
+    <p>{{ query }}</p>
+    {% else %}
+    <p>No query received.</p>
+    {% endif %}
+
+    <!-- Image Upload Form -->
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="image_upload">ফসলের ছবি আপলোড করুন:</label><br>
+        <input type="file" id="image_upload" name="image_upload" accept="image/*" required><br><br>
+        
+
+        <button type="submit">রোগ নির্ণয় করুন</button>
+    </form>
+
+
+    <!-- Display Chatbot Response -->
+    {% if answer %}
+    <h2>📢 পরামর্শ:</h2>
+    <p>{{ answer }}</p>
+    {% endif %}
+
+    <!-- Display Disease Detection Result -->
+    {% if disease_result %}
+    <h2>📢 রোগ নির্ণয়:</h2>
+    <p>{{ disease_result }}</p>
+    {% endif %}
+</body>
+</html>

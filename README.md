@@ -51,6 +51,11 @@ The project leverages machine learning models for natural language processing (N
 - The frontend dynamically updates based on user interactions (text, voice, or image).
 - Separate sections are displayed for disease detection results and advice.
 
+![alt text](<images/Screenshot from 2025-04-21 22-06-03.png>) </br>
+![alt text](<images/Screenshot from 2025-04-21 22-06-20.png>) </br>
+![alt text](<images/Screenshot from 2025-04-21 22-07-18.png>) </br>
+![alt text](<images/Screenshot from 2025-04-21 22-08-00.png>) </br>
+
 ---
 
 ## Project Structure
