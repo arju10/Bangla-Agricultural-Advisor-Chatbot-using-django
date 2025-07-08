@@ -10,7 +10,7 @@
   
   <style>
     /* General Styles */
-    body {
+      body {
       font-family: 'Noto Sans Bengali', sans-serif;
       background: #f4f6f8;
       margin: 0;
@@ -101,7 +101,7 @@
     .hidden {
       display: none;
     }
-
+    
     @media (max-width: 600px) {
       .container {
         padding: 20px;
@@ -115,6 +115,34 @@
         font-size: 1.25rem;
       }
     }
+
+
+
+    .sample-images {
+      position: absolute;
+      top: 50px;
+      right: 50px;
+      width: 200px;
+      background: #ffffff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .sample-images-list img {
+      width: 100%;
+      margin-bottom: 10px;
+      cursor: pointer;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      transition: transform 0.3s ease;
+    }
+    
+    .sample-images-list img:hover {
+      transform: scale(1.05);
+    }
+    
+    
   </style>
 
   <script>
@@ -186,6 +214,40 @@
           alert('ছবি আপলোড বা রোগ নির্ণয়ে সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।');
         });
       }
+
+
+// Sample Image upload
+      function useSampleImage(imageName) {
+        fetch('', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+          },
+          body: JSON.stringify({ sample_image: imageName })
+          
+        })
+        .then(response => {
+          if (!response.ok) throw new Error('Network error');
+          return response.json();
+        })
+        .then(data => {
+          const imageElement = document.getElementById('uploaded_image');
+          imageElement.src = data.image_url;
+          imageElement.style.display = 'block';
+      
+          const diseaseResultSection = document.getElementById('disease_result_section');
+          diseaseResultSection.classList.remove('hidden');
+      
+          document.getElementById('disease_result').innerText = data.disease_result;
+          document.getElementById('advice').innerText = data.disease_result.split('সাজেশন:')[1] || 'কোন সাজেশন পাওয়া যায়নি।';
+        })
+        .catch(error => {
+          console.error(error);
+          alert('সমস্যা হয়েছে! আবার চেষ্টা করুন।');
+        });
+      }
+      
   </script>
 </head>
 <body>
@@ -248,6 +310,19 @@
         <p id="advice">{{ answer }}  {{ disease_result }}</p>
       </div>
   </div>
+
+  {% load static %}
+
+  
+<div class="sample-images">
+  <h2>📷 উদাহরণ ছবি:</h2>
+  <div class="sample-images-list">
+    <img src="{% static 'samples/sample1.png' %}" alt="Sample 1" onclick="useSampleImage('sample1.png')" />
+    <img src="{% static 'samples/sample2.png' %}" alt="Sample 2" onclick="useSampleImage('sample2.png')" />
+    <img src="{% static 'samples/sample3.png' %}" alt="Sample 3" onclick="useSampleImage('sample3.png')" />
+  </div>
+</div>
+
 </body>
 </html>
 

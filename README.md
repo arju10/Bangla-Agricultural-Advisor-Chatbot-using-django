@@ -51,7 +51,7 @@ The project leverages machine learning models for natural language processing (N
 - The frontend dynamically updates based on user interactions (text, voice, or image).
 - Separate sections are displayed for disease detection results and advice.
 
-![alt text](<images/Screenshot from 2025-04-21 22-06-03.png>) </br>
+![alt text](<images/screencapture-127-0-0-1-8000-2025-07-08-09_53_36.png>) </br>
 ![alt text](<images/Screenshot from 2025-04-21 22-06-20.png>) </br>
 ![alt text](<images/Screenshot from 2025-04-21 22-07-18.png>) </br>
 ![alt text](<images/Screenshot from 2025-04-21 22-08-00.png>) </br>
@@ -63,26 +63,28 @@ The project leverages machine learning models for natural language processing (N
 ```
 bangla_agriculture_chatbot/
 ├── chatbot/
-│   ├── static/
-│   │   ├── models/               # Pre-trained ML models and vectorizers
-│   │   │   ├── disease_detection_model.h5
-│   │   │   ├── tfidf_vectorizer.joblib
-│   │   │   ├── tfidf_matrix.joblib
-│   │   │   └── class_labels.json
-│   ├── templates/
-│   │   └── chatbot/
-│   │       └── index.html        # Frontend HTML template
-│   ├── views.py                  # Django view logic
-│   └── urls.py                   # URL routing
+│ ├── static/
+│ │ ├── models/
+│ │ │ ├── disease_detection_model.h5
+│ │ │ ├── tfidf_vectorizer.joblib
+│ │ │ ├── tfidf_matrix.joblib
+│ │ │ └── class_labels.json
+│ │ └── samples/
+│ ├── templates/
+│ │ └── chatbot/
+│ │ └── index.html
+│ ├── views.py
+│ └── urls.py
 ├── data/
-│   └── agriculture_data.csv      # Dataset containing questions and answers
-├── manage.py                     # Django management script
-└── README.md                     # Project documentation
+│ └── agriculture_data.csv
+├── manage.py
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
-## Installation and Setup
+<!-- ## Installation and Setup -->
 
 <!-- ### Prerequisites
 - Python 3.8+
