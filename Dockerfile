@@ -1,28 +1,32 @@
-# Use official Python 3.11 slim image (small size)
+# Use official Python image
 FROM python:3.11-slim
 
-# Set environment variables to avoid Python buffering and ensure UTF-8 encoding
-ENV PYTHONUNBUFFERED=1
+# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
-ENV LANG=C.UTF-8
+ENV PYTHONUNBUFFERED=1
 
-# Set working directory inside the container
+# Set working directory
 WORKDIR /app
 
-# Copy only requirements first for caching
+# Install system dependencies
+RUN apt-get update && \
+    apt-get install -y gcc libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0 ffmpeg && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
 COPY requirements.txt /app/
 
-# Upgrade pip and install dependencies
+# Upgrade pip and install Python dependencies
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# Copy the rest of your project code
+# Copy project files
 COPY . /app/
 
-# Collect static files (if you use Django static files)
+# Collect static files if needed
 RUN python manage.py collectstatic --noinput
 
-# Expose port 8000 (default Django port)
+# Expose port 8000
 EXPOSE 8000
 
 # Run the Django development server (for production, replace with gunicorn or other WSGI server)
