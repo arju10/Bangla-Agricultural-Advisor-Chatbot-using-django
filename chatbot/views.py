@@ -22,7 +22,7 @@ def sanitize_filename(filename):
 
 # Data Preprocessing
 def load_data():
-    df = pd.read_csv("/home/arju/All Projects/AI_ML_DL_Related_Projects/Software_Intelligence/Bangla-Agricultural-Advisor-Chatbot-Using-Django/bangla_agriculture_chatbot/data/agriculture_data.csv")
+    df = pd.read_csv("/bangla_agriculture_chatbot/data/agriculture_data.csv")
     return df
 
 # Load dataset globally
@@ -33,8 +33,8 @@ vectorizer = TfidfVectorizer()
 tfidf_matrix = vectorizer.fit_transform(data['Question (Bangla)'])
 
 # Save TF-IDF model for later use (optional, if not already saved)
-joblib.dump(vectorizer, "/home/arju/All Projects/AI_ML_DL_Related_Projects/Software_Intelligence/Bangla-Agricultural-Advisor-Chatbot-Using-Django/bangla_agriculture_chatbot/chatbot/static/models/tfidf_vectorizer.joblib")
-joblib.dump(tfidf_matrix, "/home/arju/All Projects/AI_ML_DL_Related_Projects/Software_Intelligence/Bangla-Agricultural-Advisor-Chatbot-Using-Django/bangla_agriculture_chatbot/chatbot/static/models/tfidf_matrix.joblib")
+joblib.dump(vectorizer, "/bangla_agriculture_chatbot/chatbot/static/models/tfidf_vectorizer.joblib")
+joblib.dump(tfidf_matrix, "/bangla_agriculture_chatbot/chatbot/static/models/tfidf_matrix.joblib")
 
 def get_best_match(query):
     query_vector = vectorizer.transform([query])
@@ -43,10 +43,10 @@ def get_best_match(query):
     return data.iloc[best_match_index]['Answer (Bangla)']
 
 # Load Disease Detection Model
-disease_model = tf.keras.models.load_model("/home/arju/All Projects/AI_ML_DL_Related_Projects/Software_Intelligence/Bangla-Agricultural-Advisor-Chatbot-Using-Django/bangla_agriculture_chatbot/chatbot/static/models/disease_detection_model.h5")
+disease_model = tf.keras.models.load_model("/bangla_agriculture_chatbot/chatbot/static/models/disease_detection_model.h5")
 
 # Load Class Labels
-with open("/home/arju/All Projects/AI_ML_DL_Related_Projects/Software_Intelligence/Bangla-Agricultural-Advisor-Chatbot-Using-Django/bangla_agriculture_chatbot/chatbot/static/models/class_labels.json", "r") as f:
+with open("/bangla_agriculture_chatbot/chatbot/static/models/class_labels.json", "r") as f:
     class_labels = json.load(f)
 
 # # Detect Disease 
@@ -116,103 +116,6 @@ def speech_to_text():
 
 
 from django.conf import settings
-
-# # # View Function
-# def chatbot_view(request):
-#     if request.method == 'POST':
-#         # 1️⃣ 📷 Handle SAMPLE IMAGE request (sent as JSON)
-#         if request.content_type == 'application/json':
-#             body_unicode = request.body.decode('utf-8')
-#             body_data = json.loads(body_unicode)
-#             sample_image = body_data.get('sample_image')
-
-#             if sample_image:
-#                 # ✅ Build correct absolute path
-#                 static_sample_path = os.path.join(
-#                     settings.BASE_DIR,
-#                     'chatbot',         # <== your app folder
-#                     'static',
-#                     'samples',
-#                     sample_image
-#                 )
-
-#                 # ✅ The URL is always relative for <img>
-#                 static_sample_url = f"/static/samples/{sample_image}"
-
-#                 print(f"Sample image path: {static_sample_path}")
-
-#                 # ✅ Call your detection logic
-#                 disease_result = detect_disease(static_sample_path)
-
-#                 response_data = {
-#                     'image_url': static_sample_url,
-#                     'disease_result': disease_result
-#                 }
-
-#         return JsonResponse(response_data, json_dumps_params={'ensure_ascii': False})
-
-            
-            
-#         # Handle text query
-#         user_query = request.POST.get('user_query', '').strip()
-#         if user_query:
-#             answer = get_best_match(user_query)
-#             return render(request, 'chatbot/index.html', {'answer': answer})
-
-#           #  Handle voice query
-#         if request.POST.get('voice_query') == 'true':
-#             user_query = speech_to_text()  # Convert speech to text
-#             print(f"Recognized Query: {user_query}")  # Debugging statement
-#             if user_query:
-#                 answer = get_best_match(user_query)  # Get the chatbot's response
-#                 print(f"Passing Query to Template: {user_query}")  # Debugging statement
-#                 return render(request, 'chatbot/index.html', {'answer': answer, 'query': user_query})
-#             else:
-#                 return render(request, 'chatbot/index.html', {'answer': "অনুগ্রহ করে আবার বলুন।", 'query': "কিছুই শোনা যায়নি।"})
-
-#         # threting method
-#          # Handle image upload
-#         uploaded_image = request.FILES.get('image_upload')
-#         if uploaded_image:
-#             fs = FileSystemStorage()
-#             try:
-#                 # Sanitize the file name
-#                 original_filename = uploaded_image.name
-#                 sanitized_filename = sanitize_filename(original_filename)
-#                 unique_filename = f"{uuid.uuid4().hex}_{sanitized_filename}"
-
-#                 # Save the uploaded file
-#                 filename = fs.save(unique_filename, uploaded_image)
-#                 image_url = fs.url(filename)  # Get the URL of the uploaded image
-#                 image_path = fs.path(filename)
-
-#                 print(f"Uploaded Image Path: {image_path}")  # Debugging statement
-
-#                 # Call the detect_disease function
-#                 disease_result = detect_disease(image_path)
-#                 print(f"Disease Detection Result: {disease_result}")  # Debugging statement
-
-#                 # Delete the file after 10 seconds
-#                 def cleanup_file():
-#                     if os.path.exists(image_path):
-#                         os.remove(image_path)
-#                         print(f"File removed: {image_path}")
-
-#                 timer = threading.Timer(10.0, cleanup_file)  # Delay deletion by 10 seconds
-#                 timer.start()
-
-#                 response_data = {
-#                     'image_url': image_url,
-#                     'disease_result': disease_result
-#                             }
-#                 print(f"JSON Response: {response_data}")  # Debugging statement
-#                 return JsonResponse(response_data, json_dumps_params={'ensure_ascii': False})
-
-#             except Exception as e:
-#                 print(f"Error during image processing: {str(e)}")  # Debugging statement
-#                 return JsonResponse({'error': f'ছবি প্রক্রিয়াকরণে সমস্যা হয়েছে: {str(e)}'}, status=500)
-       
-#     return render(request, 'chatbot/index.html')
 
 def chatbot_view(request):
     if request.method == 'POST':
