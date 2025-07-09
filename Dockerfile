@@ -26,4 +26,7 @@ RUN python manage.py collectstatic --noinput
 EXPOSE 8000
 
 # Run the Django development server (for production, replace with gunicorn or other WSGI server)
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+# Use Gunicorn as the WSGI server for production
+CMD ["gunicorn", "bangla_agriculture_chatbot.wsgi:application", "--bind", "0.0.0.0:8000"]
